@@ -1,0 +1,302 @@
+/* ========================================================== */
+/* 1. PALETA DE CORES E VARIÁVEIS (DESIGN TOKENS) */
+/* ========================================================== */
+:root {
+    /* Cores de Fundo e Base (Mais escuro e com toque púrpura) */
+    --color-bg-dark: #07010F;       
+    --color-bg-medium: #180536;     
+    --color-text-primary: #FCFCFF;  
+    --color-text-secondary: #AAAAFF; 
+
+    /* Cores Neon (Brilho Intenso) */
+    --color-neon-snake: #00FFD1;    /* Electric Cyan (Cobra) */
+    --color-neon-food: #FF45A6;     /* Hot Pink (Comida) */
+    --color-neon-highlight: #FFB800; /* Electric Yellow-Orange (Bordas e Destaques) */
+
+    /* Dimensões e Fontes */
+    --size-unit: 8px;              
+    --border-radius-m: 12px;        
+    --font-family-title: 'Orbitron', sans-serif;
+    --font-family-body: 'Montserrat', sans-serif;
+}
+
+
+/* ========================================================== */
+/* 2. ESTILOS GLOBAIS E EFEITOS DE TELA */
+/* ========================================================== */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    /* Tipografia */
+    font-family: var(--font-family-body);
+    color: var(--color-text-primary);
+    line-height: 1.5;
+    
+    /* Modelo de Caixa */
+    min-height: 100vh;
+    padding: var(--size-unit) * 4;
+    
+    /* Layout */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    /* Visual */
+    background-color: var(--color-bg-dark);
+    background-image: radial-gradient(circle at center, #1b003e 0%, #07010F 80%);
+    overflow: hidden; 
+}
+
+/* Efeito de Scanlines (Linhas de TV antiga) no Body */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        transparent 0,
+        rgba(0, 0, 0, 0.2) 1px,
+        transparent 2px
+    );
+    pointer-events: none; 
+    opacity: 0.5;
+    z-index: -1;
+}
+
+/* Título e Estilo Neon Padronizado (Inclui Efeito Glitch Sutil) */
+.neon-text {
+    /* Tipografia */
+    font-family: var(--font-family-title);
+    font-size: 3.2em; 
+    letter-spacing: 0.3rem;
+    text-transform: uppercase;
+    
+    /* Modelo de Caixa */
+    margin-bottom: var(--size-unit) * 4;
+    
+    /* Visual */
+    color: #fff;
+    text-shadow: 
+        0 0 10px var(--color-neon-highlight),
+        0 0 20px var(--color-neon-highlight),
+        0 0 40px var(--color-neon-food); 
+    
+    animation: glitch-anim 5s infinite alternate;
+}
+
+@keyframes glitch-anim {
+    0% {
+        text-shadow: 0.05em 0 0 var(--color-neon-snake), -0.05em -0.025em 0 var(--color-neon-food);
+        opacity: 0.75;
+    }
+    11% {
+        text-shadow: none;
+        opacity: 1;
+    }
+    16% {
+        text-shadow: -0.05em -0.025em 0 var(--color-neon-snake), 0.05em 0.025em 0 var(--color-neon-food);
+        opacity: 0.8;
+    }
+    17% {
+        text-shadow: none;
+        opacity: 1;
+    }
+    100% {
+        text-shadow: none;
+        opacity: 1;
+    }
+}
+
+
+/* ========================================================== */
+/* 3. COMPONENTES E PLACAR */
+/* ========================================================== */
+
+.game-container {
+    /* Modelo de Caixa e Layout */
+    padding: var(--size-unit) * 6; 
+    max-width: 550px;
+    
+    /* Visual e Efeitos */
+    text-align: center;
+    background-color: var(--color-bg-medium); 
+    border-radius: var(--border-radius-m); 
+    border: 3px solid var(--color-neon-highlight); 
+    box-shadow: 
+        0 0 25px rgba(255, 184, 0, 0.6), 
+        0 0 5px rgba(0, 0, 0, 0.9);
+}
+
+.score-panel {
+    /* Layout */
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap; 
+    gap: var(--size-unit) * 2;
+    
+    /* Modelo de Caixa */
+    padding: var(--size-unit) * 2 var(--size-unit) * 3;
+    margin-bottom: var(--size-unit) * 4;
+    
+    /* Visual */
+    background-color: var(--color-bg-dark);
+    border-radius: var(--border-radius-m) / 2;
+    border: 1px solid var(--color-text-secondary); 
+    font-size: 1.1em;
+    font-weight: 700;
+}
+
+#score, #level, #level-progress, #highscore {
+    color: var(--color-neon-snake);
+    text-shadow: 0 0 5px var(--color-neon-snake); 
+    margin-left: var(--size-unit);
+}
+
+/* ========================================================== */
+/* 4. TABULEIRO, CANVAS E OVERLAYS (COM TRANSIÇÃO) */
+/* ========================================================== */
+#game-board-wrapper {
+    /* Layout */
+    position: relative; 
+    width: 400px;
+    height: 400px;
+    margin: 0 auto;
+    overflow: hidden; 
+    
+    /* Visual */
+    border: 5px solid var(--color-neon-snake); 
+    border-radius: var(--border-radius-m);
+    box-shadow: 
+        0 0 20px var(--color-neon-snake),
+        inset 0 0 10px rgba(0, 0, 0, 0.8); 
+}
+
+#gameCanvas {
+    display: block; 
+    background-color: var(--color-bg-dark);
+}
+
+.status-overlay {
+    /* Layout */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: var(--size-unit) * 2;
+    
+    /* Visual e UX */
+    background: rgba(0, 0, 0, 0.95); 
+    color: var(--color-neon-food); 
+    text-shadow: 0 0 12px var(--color-neon-food);
+    z-index: 20;
+    opacity: 1; 
+    transition: opacity 0.5s ease-out, visibility 0.5s; 
+}
+
+.status-overlay.hidden {
+    opacity: 0;
+    visibility: hidden; 
+    pointer-events: none;
+}
+
+.pulse-text {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.7; }
+    50% { opacity: 1; transform: scale(1.05); }
+    100% { opacity: 0.7; }
+}
+
+/* ========================================================== */
+/* 5. BOTÕES (AÇÃO) - ACESSIBILIDADE DE FOCO */
+/* ========================================================== */
+.action-btn {
+    /* Tipografia */
+    font-size: 1.3em;
+    font-weight: 700;
+    text-transform: uppercase;
+    
+    /* Modelo de Caixa */
+    padding: 12px 24px;
+    margin-top: var(--size-unit) * 4;
+    border-radius: var(--border-radius-m);
+    border: 2px solid var(--color-neon-snake); 
+    outline: none; 
+    
+    /* Interatividade e Visual */
+    cursor: pointer;
+    background-color: rgba(0, 255, 209, 0.1); 
+    color: var(--color-neon-snake);
+    box-shadow: 
+        0 0 10px var(--color-neon-snake),
+        inset 0 0 5px var(--color-neon-snake);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.action-btn:hover {
+    background-color: rgba(0, 255, 209, 0.25);
+    color: #fff;
+    box-shadow: 
+        0 0 20px var(--color-neon-snake),
+        0 0 40px rgba(0, 255, 209, 0.8);
+    transform: scale(1.05); 
+}
+
+/* Foco Acessível: Aparência quando navegado por teclado (tecla TAB) */
+.action-btn:focus {
+    border: 2px solid var(--color-neon-food); 
+    box-shadow: 
+        0 0 15px var(--color-neon-food), 
+        0 0 30px var(--color-neon-food);
+}
+
+/* ========================================================== */
+/* 6. RESPONSIVIDADE */
+/* ========================================================== */
+@media (max-width: 600px) {
+    body {
+        padding: var(--size-unit) * 2;
+    }
+    
+    .game-container {
+        padding: var(--size-unit) * 3;
+        width: 100%;
+        max-width: none;
+    }
+
+    .neon-text {
+        font-size: 2em;
+        letter-spacing: 0.15rem;
+    }
+    
+    .score-panel {
+        font-size: 0.85em;
+        padding: var(--size-unit);
+        justify-content: space-around;
+    }
+
+    #game-board-wrapper {
+        width: 90vw; 
+        height: 90vw; 
+        max-width: 400px;
+        max-height: 400px;
+    }
+    
+    .action-btn {
+        font-size: 1.1em;
+        padding: 10px 20px;
+    }
+}
