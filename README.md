@@ -7,6 +7,12 @@ Este trabalho prático, desenvolvido em HTML, CSS e JavaScript, tem como objetiv
 
 O desafio atual é transcender a funcionalidade básica e focar na qualidade do design e na arquitetura do código, transformando o protótipo em uma aplicação visualmente atraente e estruturalmente robusta.
 
+ ## Tela De Inicio
 <div align="center">
- 
+ <img width="1840" height="860" alt="Captura de tela 2025-10-20 091700" src="https://github.com/user-attachments/assets/7f3c8898-992b-42bf-bc93-c8ebe882c63f" />
+</div>
+
+## Tela do Jogo
+<div align="center">
+<img width="1795" height="908" alt="Captura de tela 2025-10-20 091742" src="https://github.com/user-attachments/assets/dcfcf247-4ab6-4a81-b27d-7b29d878ad6f" />
 </div>
